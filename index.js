@@ -11,6 +11,7 @@ app.use(express.json());
 dbConnection().catch(err => console.log(err));
 
 app.use("/api/users", require("./routes/users"));
+app.use("/api/auth", require("./routes/auth"));
 
 app.listen(process.env.API_PORT, () => {
     console.log("Server running. Port: " + process.env.API_PORT);

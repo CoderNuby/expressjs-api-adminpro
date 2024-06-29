@@ -1,10 +1,11 @@
 const { response } = require("express");
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
+const { generateJsonWebToken } = require("../helpers/jsonwebtoken");
 
 async function getUsers(req, res) {
 
-    const users = await User.find({}, "name email role google password");
+    const users = await User.find({}, "name email role google");
 
     res.status(200).json({
         ok: true,
@@ -34,10 +35,13 @@ async function createUser(req, res = response) {
 
         await user.save();
 
+        const token = await generateJsonWebToken(user._id);
+
         res.status(200).json({
             ok: true,
             message: "User created successful",
-            user
+            user,
+            token
         });
     } catch (err) {
         res.status(500).json({
@@ -89,8 +93,36 @@ async function updateUser(req, res = response) {
     }
 }
 
+async function deleteUser(req, res = response) {
+    const _id = req.params.id;
+
+    try {
+        const userDB = await User.findById(_id);
+
+        if (!userDB) {
+            return res.status(404).json({
+                ok: false,
+                message: "User doesn't exist"
+            });
+        }
+
+        await User.findByIdAndDelete(_id);
+
+        res.status(200).json({
+            ok: true,
+            message: "User deleted successfully"
+        });
+    } catch (err) {
+        res.status(500).json({
+            ok: false,
+            message: "API error"
+        });
+    }
+}
+
 module.exports = {
     getUsers,
     createUser,
-    updateUser
+    updateUser,
+    deleteUser
 }
