@@ -11,7 +11,12 @@ app.use(express.json());
 dbConnection().catch(err => console.log(err));
 
 app.use("/api/users", require("./routes/users"));
-app.use("/api/auth", require("./routes/auth"));
+app.use("/api/hospitals", require("./routes/hospitals"));
+app.use("/api/medicalDoctors", require("./routes/medical-doctor"));
+app.use("/api/searches", require("./routes/search"));
+app.use("/api/uploads", require("./routes/upload"));
+app.use("/api/images", require("./routes/images"));
+app.use("/api/auths", require("./routes/auth"));
 
 app.listen(process.env.API_PORT, () => {
     console.log("Server running. Port: " + process.env.API_PORT);

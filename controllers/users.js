@@ -5,12 +5,21 @@ const { generateJsonWebToken } = require("../helpers/jsonwebtoken");
 
 async function getUsers(req, res) {
 
-    const users = await User.find({}, "name email role google");
+    const currentPage = Number(req.query.currentPage);
+    const recordsPerPage = Number(req.query.recordsPerPage);
+
+    const [ users, totalRecords ] = await Promise.all([
+        await User.find({}, "name email role google image")
+            .skip(currentPage * recordsPerPage)
+            .limit(recordsPerPage),
+        User.countDocuments()
+    ]);
 
     res.status(200).json({
         ok: true,
         message: "All Users",
-        users
+        users,
+        totalRecords
     });
 }
 
