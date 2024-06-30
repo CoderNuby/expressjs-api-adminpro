@@ -2,8 +2,9 @@ const { response } = require("express");
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const { generateJsonWebToken } = require("../helpers/jsonwebtoken");
+const { googleVerify } = require("../helpers/google-verify");
 
-async function authUser(req, res = response) {
+async function loginUser(req, res = response) {
 
     const { email, password } = req.body;
 
@@ -42,6 +43,46 @@ async function authUser(req, res = response) {
     }
 }
 
+async function loginGoogleUser(req, res = response) {
+
+    try {
+        const { email, name, picture } = await googleVerify(req.body.token);
+
+        const userDB = await User.findOne({email});
+        let user;
+
+        if(!userDB) {
+            user = new User({
+                name,
+                email,
+                image: picture,
+                password: "None",
+                google: true
+            });
+        }else {
+            user = userDB;
+            user.google = true;
+        }
+
+        await user.save();
+
+        const token = await generateJsonWebToken(user._id);
+
+        res.status(200).json({
+            ok: true,
+            message: "Login successful",
+            token
+        });
+    } catch (err) {
+        return res.status(500).json({
+            ok: false,
+            message: "API error",
+            err
+        });
+    }
+}
+
 module.exports = {
-    authUser
+    loginUser,
+    loginGoogleUser
 }
