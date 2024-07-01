@@ -45,7 +45,10 @@ async function updateHospital(req, res = response) {
             });
         }
 
-        const hospitalUpdated = await Hospital.findByIdAndUpdate(_id, req.body, { new: true });
+        const hospitalUpdated = await Hospital.findByIdAndUpdate(_id, {
+            ...req.body,
+            user: _id
+        }, { new: true });
 
         res.status(200).json({
             ok: true,
@@ -73,7 +76,7 @@ async function deleteHospital(req, res = response) {
             });
         }
 
-        const hosopitalUpdated = await Hospital.findByIdAndDelete(_id);
+        await Hospital.findByIdAndDelete(_id);
 
         res.status(200).json({
             ok: true,

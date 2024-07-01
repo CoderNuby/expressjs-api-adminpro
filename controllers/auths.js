@@ -82,7 +82,21 @@ async function loginGoogleUser(req, res = response) {
     }
 }
 
+async function renewToken(req, res = response) {
+
+    const _id = req._id;
+
+    const token = await generateJsonWebToken(_id);
+
+    res.status(200).json({
+        ok: true,
+        message: "New Token generated",
+        token
+    });
+}
+
 module.exports = {
     loginUser,
-    loginGoogleUser
+    loginGoogleUser,
+    renewToken
 }
