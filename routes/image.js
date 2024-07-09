@@ -8,7 +8,7 @@ const router = Router();
 
 router.use(expressFileUpload());
 
-router.get("/:collection/:image", validationJsonWebToken, getImage);
+router.get("/:collection/:image", getImage);
 
 
 module.exports = router;

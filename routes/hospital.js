@@ -6,11 +6,17 @@ const {
     getHospitals,
     createHospital,
     updateHospital,
-    deleteHospital } = require("../controllers/hospitals");
+    deleteHospital, 
+    getAllHospitalNames,
+    getHospital} = require("../controllers/hospitals");
 
 const router = Router();
 
 router.get("/", validationJsonWebToken, getHospitals);
+
+router.get("/:id", validationJsonWebToken, getHospital);
+
+router.get("/all/names", validationJsonWebToken, getAllHospitalNames);
 
 router.post("/", [
     validationJsonWebToken,

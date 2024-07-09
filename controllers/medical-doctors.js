@@ -3,16 +3,53 @@ const MedicalDoctor = require("../models/medical-doctor");
 const Hospital = require("../models/hospital");
 
 async function getMedicalDoctors(req, res) {
+    
+    const currentPage = Number(req.query.currentPage);
+    const recordsPerPage = Number(req.query.recordsPerPage);
 
-    const medicalDoctors = await MedicalDoctor.find()
-        .populate("user", "name email role")
-        .populate("hospital", "name");
+        const [ medicalDoctors, totalRecords ] = await Promise.all([
+            MedicalDoctor.find()
+            .populate("user", "name email role google image")
+                .skip(currentPage * recordsPerPage)
+                .limit(recordsPerPage),
+                MedicalDoctor.countDocuments()
+        ]);
 
     res.status(200).json({
         ok: true,
-        message: "Hello world",
-        medicalDoctors
+        message: "All Medical Doctors",
+        medicalDoctors,
+        totalRecords
     });
+}
+
+async function getMedicalDoctor(req, res) {
+
+    try {
+        const doctorId = req.params.id;
+
+        const medicalDoctor = await MedicalDoctor.findById(doctorId)
+            .populate("hospital")
+            .populate("user", "name email role google image");
+    
+        if(!medicalDoctor) {
+            return res.status(200).json({
+                ok: true,
+                message: "Doctor not found",
+            });
+        }
+    
+        res.status(200).json({
+            ok: true,
+            message: "Medical Doctor",
+            medicalDoctor
+        });
+    } catch (err) {
+        return res.status(500).json({
+            ok: true,
+            message: "API error"
+        });
+    }
 }
 
 async function createMedicalDoctor(req, res = response) {
@@ -35,7 +72,7 @@ async function createMedicalDoctor(req, res = response) {
 
         res.status(200).json({
             ok: true,
-            message: "Hospital created successful",
+            message: "Doctor created successful",
             medicalDoctor
         });
     } catch (err) {
@@ -65,7 +102,7 @@ async function updateMedicalDoctor(req, res = response) {
         const medicalDoctorUpdated = await MedicalDoctor.findByIdAndUpdate(doctorId, {
             user: userId,
             ...req.body
-        });
+        }, {new: true});
 
         res.status(200).json({
             ok: true,
@@ -114,5 +151,6 @@ module.exports = {
     getMedicalDoctors,
     createMedicalDoctor,
     updateMedicalDoctor,
-    deleteMedicalDoctor
+    deleteMedicalDoctor,
+    getMedicalDoctor
 }

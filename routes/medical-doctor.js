@@ -6,11 +6,14 @@ const {
     getMedicalDoctors,
     createMedicalDoctor,
     updateMedicalDoctor,
-    deleteMedicalDoctor } = require("../controllers/medical-doctors");
+    deleteMedicalDoctor, 
+    getMedicalDoctor} = require("../controllers/medical-doctors");
 
 const router = Router();
 
 router.get("/", validationJsonWebToken, getMedicalDoctors);
+
+router.get("/:id", validationJsonWebToken, getMedicalDoctor);
 
 router.post("/", [
     validationJsonWebToken,

@@ -19,6 +19,13 @@ async function loginUser(req, res = response) {
             });
         }
 
+        if(userDB.google) {
+            return res.status(401).json({
+                ok: false,
+                message: "You should login with google"
+            });
+        }
+
         const validPassword = bcryptjs.compareSync(password, userDB.password);
 
         if(!validPassword){
@@ -33,7 +40,8 @@ async function loginUser(req, res = response) {
         res.status(200).json({
             ok: true,
             message: "Login successful",
-            token
+            token,
+            user: userDB
         });
     } catch (err) {
         res.status(500).json({
@@ -95,8 +103,30 @@ async function renewToken(req, res = response) {
     });
 }
 
+async function validateToken(req, res = response) {
+
+    const _id = req._id;
+
+    try {
+
+        const user = await User.findById(_id);
+
+        res.status(200).json({
+            ok: true,
+            message: "Token verified",
+            user
+        });
+    } catch (err) {
+        return res.status(500).json({
+            ok: true,
+            message: "API error"
+        });
+    }
+}
+
 module.exports = {
     loginUser,
     loginGoogleUser,
-    renewToken
+    renewToken,
+    validateToken
 }

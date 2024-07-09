@@ -70,7 +70,7 @@ function fileUpload(req, res = response) {
             res.status(201).json({
                 ok: true,
                 message: "Image Uploaded successful",
-                fileName
+                imageName: fileName
             });
         });
     } catch (err) {
