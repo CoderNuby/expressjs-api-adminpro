@@ -11,7 +11,7 @@ async function searchFromAll(req, res = response) {
 
     const regExp = new RegExp(keyword, "i");
 
-    const [ users, hospital, medicalDoctor] = await Promise.all([
+    const [ users, hospitals, medicalDoctors] = await Promise.all([
         User.find({
             $or: [
                 { name: regExp },
@@ -25,8 +25,8 @@ async function searchFromAll(req, res = response) {
         ok: true,
         message: "Get from all collections",
         users,
-        hospital,
-        medicalDoctor
+        hospitals,
+        medicalDoctors
     });
 }
 
